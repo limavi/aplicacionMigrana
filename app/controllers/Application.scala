@@ -1,19 +1,14 @@
 package controllers
-
-import java.util.UUID
-
 import models._
-import play.api.libs.json
 import services.migranaServices
 import play.api.mvc._
-import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.json.{ Json, Writes }
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class Application extends Controller {
 
   import play.api.mvc._
   import play.api.libs.json._
-  import play.api.libs.functional.syntax._
 
   implicit val episodioFormat = Json.format[Episodio]
   implicit val pacienteFormat = Json.format[Paciente]
@@ -23,8 +18,8 @@ class Application extends Controller {
   }
 
   def consultarEpisodios(idPaciente: Option[ Long ]) = Action.async { implicit request =>
-    migranaServices.getEpisodios(idPaciente) map { episodios =>
-      Ok( Json.toJson( episodios ) )
+    migranaServices.getEpisodios(idPaciente) map { episodio =>
+      Ok( Json.toJson( episodio ) )
     }
   }
 
@@ -39,6 +34,7 @@ class Application extends Controller {
       json.validate[Episodio].map{
         case (episodio) =>{
           migranaServices.addEpisodio(episodio).map(resultado => println(resultado))
+          migranaServices.generarAlertaPorMuchosDolores(episodio.IdPaciente)
           Ok("Episodio agregado satisfactoriamente" )
         }
       }.recoverTotal{

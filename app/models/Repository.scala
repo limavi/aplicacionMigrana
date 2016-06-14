@@ -1,16 +1,15 @@
 package models
 
-import java.util.UUID
-import java.util.concurrent.Executors
-
+import org.joda.time.{DateTime, LocalDate}
 import slick.lifted.TableQuery
-
 import play.api.Play
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.json.{Json, Writes}
+
 import scala.concurrent.{ExecutionContext, Future}
 import slick.driver.JdbcProfile
 import slick.driver.MySQLDriver.api._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object Repository {
@@ -33,10 +32,8 @@ object Repository {
 
   def getEpisodios(idPaciente: Option[ Long] ): Future[Seq[Episodio]] = {
     val query= idPaciente match {
-      case Some(idPaciente) =>
-        episodioTableQuery.filter(_.IdPaciente === idPaciente)
-      case None=>
-        episodioTableQuery
+      case Some(idPaciente) =>episodioTableQuery.filter(_.IdPaciente === idPaciente)
+      case None=>episodioTableQuery
     }
     dbConfig.db.run(query.result)
   }
@@ -47,5 +44,4 @@ object Repository {
       case None=>dbConfig.db.run(pacienteQuery.result)
     }
   }
-
 }
