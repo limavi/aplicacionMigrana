@@ -1,24 +1,17 @@
 package models
 
 import java.util.UUID
+import java.util.concurrent.Executors
 
-import akka.dispatch.sysmsg.Failed
 import slick.lifted.TableQuery
 
-import scala.concurrent.Future
-
-import org.joda.time.DateTime
-import java.sql.Timestamp
 import play.api.Play
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.json.{Json, Writes}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import slick.driver.JdbcProfile
 import slick.driver.MySQLDriver.api._
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util
-import scala.util.{Failure, Success, Try}
-
 
 object Repository {
   val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
@@ -29,12 +22,13 @@ object Repository {
   val posiblesCausasQuery = TableQuery[PosiblesCausasTable]
   val pacienteQuery = TableQuery[PacienteTable]
 
+
   def addEpisodioCompleto(epiCompleto: EpisodioCompleto): Future[Int] = {
     val uuid: String = UUID.randomUUID.toString
     for {
-      episodioInsertado <-  dbConfig.db.run(episodioTableQuery += epiCompleto.episodio.copy(Id=uuid))
-      medicamentoInsertado <-  dbConfig.db.run(medicamentoEpisodioTableQuery.forceInsertAll(epiCompleto.medicamentos.map(_.copy(IdEpisodioDolor = uuid))))
-      posiblesCausasInsertado <- dbConfig.db.run(posiblesCausasQuery.forceInsertAll(epiCompleto.posiblesCausas.map(_.copy(IdEpisodioDolor = uuid))))
+      episodioInsertado       <- dbConfig.db.run(episodioTableQuery += epiCompleto.episodio.copy(Id=uuid))
+      medicamentoInsertado    <- dbConfig.db.run(medicamentoEpisodioTableQuery.forceInsertAll(epiCompleto.medicamentos.map(_.copy(Id=0,IdEpisodioDolor = uuid))))
+      posiblesCausasInsertado <- dbConfig.db.run(posiblesCausasQuery.forceInsertAll(epiCompleto.posiblesCausas.map(_.copy(Id=0, IdEpisodioDolor = uuid))))
     }yield episodioInsertado
   }
 

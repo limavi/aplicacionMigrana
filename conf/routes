@@ -8,7 +8,7 @@ GET     /episodios                  controllers.Application.consultarEpisodiosCo
 GET     /pacientes                  controllers.Application.consultarPacientes(idPaciente: Option[ Long ])
 
 
-POST    /gregarEpisodio             controllers.Application.agregarEpisodio
+POST    /agregarEpisodio             controllers.Application.agregarEpisodio
 
 
 # Map static resources from the /public folder to the /assets URL path
