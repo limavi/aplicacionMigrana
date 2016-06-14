@@ -17,37 +17,24 @@ object Repository {
   val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
 
   val episodioTableQuery = TableQuery[EpisodioTable]
-  val medicamentoEpisodioTableQuery = TableQuery[MedicamentoEpisodioTable]
-  val tipoCausaQuery = TableQuery[TipoCausaTable]
-  val posiblesCausasQuery = TableQuery[PosiblesCausasTable]
   val pacienteQuery = TableQuery[PacienteTable]
 
 
-  def addEpisodioCompleto(epiCompleto: EpisodioCompleto): Future[Int] = {
-    val uuid: String = UUID.randomUUID.toString
-    for {
-      episodioInsertado       <- dbConfig.db.run(episodioTableQuery += epiCompleto.episodio.copy(Id=uuid))
-      medicamentoInsertado    <- dbConfig.db.run(medicamentoEpisodioTableQuery.forceInsertAll(epiCompleto.medicamentos.map(_.copy(Id=0,IdEpisodioDolor = uuid))))
-      posiblesCausasInsertado <- dbConfig.db.run(posiblesCausasQuery.forceInsertAll(epiCompleto.posiblesCausas.map(_.copy(Id=0, IdEpisodioDolor = uuid))))
-    }yield episodioInsertado
+  def addEpisodio(epi: Episodio): Future[String] = {
+    dbConfig.db.run(episodioTableQuery += epi).map(res => "User successfully added").recover {
+      case ex: Exception => ex.getCause.getMessage
+    }
   }
 
-  def getEpisodiosCompletos(idPaciente: Option[ Long] ): Future[List[EpisodioCompleto]] = {
+
+  def getEpisodios(idPaciente: Option[ Long] ): Future[Seq[Episodio]] = {
     val query= idPaciente match {
       case Some(idPaciente) =>
-        episodioTableQuery.filter(_.IdPaciente === idPaciente) joinLeft medicamentoEpisodioTableQuery on {_.Id===_.IdEpisodioDolor} joinLeft posiblesCausasQuery on {_._1.Id ===_.IdEpisodioDolor}
+        episodioTableQuery.filter(_.IdPaciente === idPaciente)
       case None=>
-        episodioTableQuery joinLeft medicamentoEpisodioTableQuery on {_.Id===_.IdEpisodioDolor} joinLeft posiblesCausasQuery on {_._1.Id ===_.IdEpisodioDolor}
+        episodioTableQuery
     }
-    val resultF = dbConfig.db.run(query.result)
-    resultF.map { result =>
-      val grouped: Map[(Episodio, Option[MedicamentoEpisodio]), Seq[((Episodio, Option[MedicamentoEpisodio]), Option[PosiblesCausas])]] = result.groupBy { case (episodio,_) => episodio }
-      grouped.map { case (episodio, seq) =>
-        val medicamentos: Seq[MedicamentoEpisodio] = seq.flatMap { case (x,y) => x._2 }
-        val posiblesCausas: Seq[PosiblesCausas] = seq.flatMap { case (_,posiblesCausasOpt) => posiblesCausasOpt }
-        EpisodioCompleto(episodio._1, medicamentos,posiblesCausas)
-      }.toList
-    }
+    dbConfig.db.run(query.result)
   }
 
   def getPacientes(idPaciente: Option[Long] ): Future[Seq[Paciente]] = {

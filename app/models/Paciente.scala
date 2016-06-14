@@ -13,7 +13,7 @@ case class Paciente(
    FechaNacimiento: DateTime,
    Sexo: String)
 
-class PacienteTable(tag: Tag) extends Table[Paciente](tag, "Paciente") {
+class PacienteTable(tag: Tag) extends Table[Paciente](tag, "paciente") {
   implicit val jdateColumnType = MappedColumnType.base[ DateTime, Timestamp ]( dt => new Timestamp( dt.getMillis ), ts => new DateTime( ts.getTime ) )
   def Id = column[Long]("id", O.PrimaryKey,O.AutoInc)
   def TipoDocumento = column[String]("TipoDocumento")
