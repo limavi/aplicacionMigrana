@@ -15,17 +15,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object Repository {
   val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
-
   val episodioTableQuery = TableQuery[EpisodioTable]
   val pacienteQuery = TableQuery[PacienteTable]
 
 
   def addEpisodio(epi: Episodio): Future[String] = {
-    dbConfig.db.run(episodioTableQuery += epi).map(res => "User successfully added").recover {
+    dbConfig.db.run(episodioTableQuery += epi).map(res => "episodio agregado correctamente").recover {
       case ex: Exception => ex.getCause.getMessage
     }
   }
 
+  def addListEpisodios(epi: List[Episodio]): Future[String] = {
+    dbConfig.db.run(episodioTableQuery.++=(epi)).map(res => "episodios sincronizados").recover {
+      case ex: Exception => ex.getCause.getMessage
+    }
+  }
 
   def getEpisodios(idPaciente: Option[ Long] ): Future[Seq[Episodio]] = {
     val query= idPaciente match {

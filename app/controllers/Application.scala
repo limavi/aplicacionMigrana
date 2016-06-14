@@ -38,7 +38,7 @@ class Application extends Controller {
     request.body.asJson.map { json =>
       json.validate[Episodio].map{
         case (episodio) =>{
-          migranaServices.addEpisodioCompleto(episodio).map(resultado => println(resultado))
+          migranaServices.addEpisodio(episodio).map(resultado => println(resultado))
           Ok("Episodio agregado satisfactoriamente" )
         }
       }.recoverTotal{
@@ -48,6 +48,23 @@ class Application extends Controller {
       BadRequest("Se esperaba un json para ejecutar el POST")
     }
   }
+
+  def sincronizarEpisodios = Action { request =>
+    request.body.asJson.map { json =>
+      json.validate[List [Episodio]].map{
+        case (listEpisodios) =>{
+          migranaServices.addListEpisodios(listEpisodios).map(resultado => println(resultado))
+          Ok("Episodios sincronizados satisfactoriamente" )
+        }
+      }.recoverTotal{
+        e => BadRequest("Existe un error en el JSON: "+ JsError.toFlatJson(e))
+      }
+    }.getOrElse {
+      BadRequest("Se esperaba un json para ejecutar el POST")
+    }
+  }
+
+
 
 
 }
