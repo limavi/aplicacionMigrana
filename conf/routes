@@ -5,6 +5,8 @@
 # Home page
 GET     /                           controllers.Application.index
 GET     /episodios                  controllers.Application.consultarEpisodiosCompletos(idPaciente: Option[ Long ])
+GET     /pacientes                  controllers.Application.consultarPacientes(idPaciente: Option[ Long ])
+
 
 POST    /gregarEpisodio             controllers.Application.agregarEpisodio
 
