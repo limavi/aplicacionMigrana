@@ -38,6 +38,14 @@ object Repository {
     dbConfig.db.run(query.result)
   }
 
+  def getTotalEpisodos(idPaciente: Option[ Long] ): Future[Int] = {
+    val query= idPaciente match {
+      case Some(idPaciente) =>episodioTableQuery.filter(_.IdPaciente === idPaciente).length
+      case None=>episodioTableQuery.length
+    }
+    dbConfig.db.run(query.result)
+  }
+
   def getPacientes(idPaciente: Option[Long] ): Future[Seq[Paciente]] = {
     idPaciente match{
       case Some(idPaciente)=>  dbConfig.db.run(pacienteQuery.filter(_.Id === idPaciente).result)

@@ -22,10 +22,10 @@ object migranaServices {
   }
 
   def generarAlertaPorMuchosDolores(idPaciente: Long )(implicit ec: ExecutionContext): Future[Int] = {
-    Repository.getEpisodios(Some(idPaciente)).map(episodios=> {
-      if(episodios.length>8){
-        println("Alerta!!! usted ya ha tenido "+episodios.length + " dolores de cabeza, por favor saque una cita " )}
-      episodios.length
+    Repository.getTotalEpisodos(Some(idPaciente)).map(total=> {
+      if(total>99){
+        println("Alerta!!! usted ya ha tenido "+ total + " dolores de cabeza, por favor saque una cita " )}
+      total
     })
   }
 
