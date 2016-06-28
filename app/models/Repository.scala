@@ -19,7 +19,7 @@ object Repository {
 
 
   def addEpisodio(epi: Episodio): Future[String] = {
-    dbConfig.db.run(episodioTableQuery += epi).map(res => "episodio agregado correctamente  " + new DateTime()).recover {
+    dbConfig.db.run(episodioTableQuery += epi).map(res => "episodio agregado correctamente").recover {
       case ex: Exception => ex.getCause.getMessage
     }
   }
@@ -31,10 +31,17 @@ object Repository {
   }
 
   def getEpisodios(idPaciente: Option[ Long] ): Future[Seq[Episodio]] = {
-    val query= idPaciente match {
+    val query: Query[EpisodioTable, Episodio, Seq] = idPaciente match {
       case Some(idPaciente) =>episodioTableQuery.filter(_.IdPaciente === idPaciente)
       case None=>episodioTableQuery
     }
+    dbConfig.db.run(query.result)
+  }
+
+  def getEpisodiosPorPaciente(TipoDocumento: String, NumeroDocumento: Long ): Future[Seq[Episodio]] = {
+    val query = for {
+      (episodio, paciente) <- episodioTableQuery.join(pacienteQuery.filter(p => p.TipoDocumento === TipoDocumento && p.NumeroDocumento === NumeroDocumento)) on (_.IdPaciente === _.Id)
+    }yield episodio
     dbConfig.db.run(query.result)
   }
 

@@ -1,6 +1,7 @@
 package services
 
-import models.{Paciente, Episodio, Repository}
+import models._
+
 import scala.concurrent.{ExecutionContext, Future}
 
 object migranaServices {
@@ -15,6 +16,11 @@ object migranaServices {
 
   def getEpisodios(idPaciente: Option[ Long ]): Future[Seq[Episodio]] = {
     Repository.getEpisodios(idPaciente)
+  }
+
+
+  def getEpisodiosPorPaciente(TipoDocumento: String, NumeroDocumento: Long) = {
+    Repository.getEpisodiosPorPaciente(TipoDocumento,NumeroDocumento)
   }
 
   def getPacientes(TipoDocumento:Option[ String ],  NumeroDocumento: Option[Long ]): Future[Seq[Paciente]] = {

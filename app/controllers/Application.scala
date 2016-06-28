@@ -26,6 +26,12 @@ class Application extends Controller {
     }
   }
 
+  def consultarEpisodiosPorPaciente(TipoDocumento: String, NumeroDocumento: Long)= Action.async { implicit request =>
+    migranaServices.getEpisodiosPorPaciente(TipoDocumento,NumeroDocumento) map { episodiosPorPaciente =>
+      Ok( Json.toJson( episodiosPorPaciente ) )
+    }
+  }
+
   def consultarPacientes(TipoDocumento:Option[ String ],  NumeroDocumento: Option[Long ]): Action[AnyContent] = Action.async { implicit request =>
     migranaServices.getPacientes(TipoDocumento,NumeroDocumento ) map { pacientes =>
       Ok( Json.toJson( pacientes ) )
