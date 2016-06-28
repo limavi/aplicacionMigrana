@@ -2,8 +2,11 @@ package controllers
 import models._
 import services.migranaServices
 import play.api.mvc._
-import play.api.libs.json.{ Json, Writes }
+import play.api.libs.json.{Json, Writes}
+import slick.dbio.FutureAction
+
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class Application extends Controller {
 
@@ -23,25 +26,27 @@ class Application extends Controller {
     }
   }
 
-  def consultarPacientes(idPaciente: Option[ Long ]) = Action.async { implicit request =>
-    migranaServices.getPacientes(idPaciente) map { pacientes =>
+  def consultarPacientes(TipoDocumento:Option[ String ],  NumeroDocumento: Option[Long ]): Action[AnyContent] = Action.async { implicit request =>
+    migranaServices.getPacientes(TipoDocumento,NumeroDocumento ) map { pacientes =>
       Ok( Json.toJson( pacientes ) )
     }
   }
 
-  def agregarEpisodio = Action { request =>
+  def agregarEpisodio= Action.async { implicit request =>
     request.body.asJson.map { json =>
       json.validate[Episodio].map{
-        case (episodio) =>{
-          migranaServices.addEpisodio(episodio).map(resultado => println(resultado))
-          migranaServices.generarAlertaPorMuchosDolores(episodio.IdPaciente)
-          Ok("Episodio agregado satisfactoriamente" )
+        case (episodio) => {
+          Repository.addEpisodio(episodio).map(resultado => {
+            println(resultado)
+            migranaServices.generarAlertaPorMuchosDolores(episodio.IdPaciente)
+            Ok("Episodio agregado satisfactoriamente")
+          })
         }
       }.recoverTotal{
-        e => BadRequest("Existe un error en el JSON: "+ JsError.toFlatJson(e))
+        e => Future(BadRequest("Existe un error en el JSON: "+ JsError.toFlatJson(e)))
       }
     }.getOrElse {
-      BadRequest("Se esperaba un json para ejecutar el POST")
+      Future(BadRequest("Se esperaba un json para ejecutar el POST"))
     }
   }
 
@@ -59,9 +64,5 @@ class Application extends Controller {
       BadRequest("Se esperaba un json para ejecutar el POST")
     }
   }
-
-
-
-
 }
 

@@ -17,16 +17,16 @@ object migranaServices {
     Repository.getEpisodios(idPaciente)
   }
 
-  def getPacientes(idPaciente: Option[ Long ]): Future[Seq[Paciente]] = {
-    Repository.getPacientes(idPaciente)
+  def getPacientes(TipoDocumento:Option[ String ],  NumeroDocumento: Option[Long ]): Future[Seq[Paciente]] = {
+    Repository.getPacientes(TipoDocumento, NumeroDocumento)
   }
 
-  def generarAlertaPorMuchosDolores(idPaciente: Long )(implicit ec: ExecutionContext): Future[Int] = {
-    Repository.getTotalEpisodos(Some(idPaciente)).map(total=> {
-      if(total>99){
+  def generarAlertaPorMuchosDolores(idPaciente: Long ): Future[Int] = {
+    import scala.concurrent.ExecutionContext.Implicits.global
+    Repository.getTotalEpisodosPorPaciente(idPaciente).map(total=> {
+      if(total>12000){
         println("Alerta!!! usted ya ha tenido "+ total + " dolores de cabeza, por favor saque una cita " )}
       total
     })
   }
-
 }

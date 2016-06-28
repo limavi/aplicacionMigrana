@@ -19,13 +19,13 @@ object Repository {
 
 
   def addEpisodio(epi: Episodio): Future[String] = {
-    dbConfig.db.run(episodioTableQuery += epi).map(res => "episodio agregado correctamente").recover {
+    dbConfig.db.run(episodioTableQuery += epi).map(res => "episodio agregado correctamente  " + new DateTime()).recover {
       case ex: Exception => ex.getCause.getMessage
     }
   }
 
   def addListEpisodios(epi: List[Episodio]): Future[String] = {
-    dbConfig.db.run(episodioTableQuery.++=(epi)).map(res => "episodios sincronizados").recover {
+    dbConfig.db.run(episodioTableQuery.++=(epi)).map(res => "episodios sincronizados  " + res.toString).recover {
       case ex: Exception => ex.getCause.getMessage
     }
   }
@@ -38,17 +38,22 @@ object Repository {
     dbConfig.db.run(query.result)
   }
 
-  def getTotalEpisodos(idPaciente: Option[ Long] ): Future[Int] = {
-    val query= idPaciente match {
-      case Some(idPaciente) =>episodioTableQuery.filter(_.IdPaciente === idPaciente).length
-      case None=>episodioTableQuery.length
-    }
+  def getTotalEpisodosPorPaciente(idPaciente:  Long ): Future[Int] = {
+    val query=episodioTableQuery.filter(_.IdPaciente === idPaciente).length
     dbConfig.db.run(query.result)
   }
 
-  def getPacientes(idPaciente: Option[Long] ): Future[Seq[Paciente]] = {
-    idPaciente match{
-      case Some(idPaciente)=>  dbConfig.db.run(pacienteQuery.filter(_.Id === idPaciente).result)
+  def getPacientes(TipoDocumento:Option[ String ],  NumeroDocumento: Option[Long ] ): Future[Seq[Paciente]] = {
+
+    TipoDocumento match{
+      case Some(tipo)=>  {
+        NumeroDocumento match{
+          case Some(num)=>{
+            dbConfig.db.run(pacienteQuery.filter(p=>p.TipoDocumento === tipo && p.NumeroDocumento===num).result)
+          }
+          case None=>dbConfig.db.run(pacienteQuery.result)
+        }
+      }
       case None=>dbConfig.db.run(pacienteQuery.result)
     }
   }

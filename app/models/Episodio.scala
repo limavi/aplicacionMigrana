@@ -6,15 +6,15 @@ import slick.driver.MySQLDriver.api._
 
 case class Episodio(
    Id: Long,
-   IdPaciente:Long,
-   FechayHoraEpisodio: DateTime,
-   NivelDolor: String,
-   LocalizacionDolor:String,
-   PromedioHorasSuenoSemanal:Long,
-   MedicamentoTomaActualmente: String,
-   BebidasqueCausaronMigrana: String,
-   AlimentosqueCausaronMigrana: String,
-   ActividadFisicaqueCausaronMigrana: String)
+IdPaciente:Long,
+FechayHoraEpisodio: DateTime,
+NivelDolor: String,
+LocalizacionDolor:String,
+PromedioHorasSuenoSemanal:Long,
+MedicamentoTomaActualmente: String,
+BebidasqueCausaronMigrana: String,
+AlimentosqueCausaronMigrana: String,
+ActividadFisicaqueCausaronMigrana: String)
 
 
 class EpisodioTable(tag: Tag) extends Table[Episodio](tag, "episodio") {
