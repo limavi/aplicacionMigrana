@@ -17,11 +17,11 @@ class Application extends Controller {
   implicit val pacienteFormat = Json.format[Paciente]
 
   def index= Action {
-    Ok(views.html.index("Experimento 1"))
+    Ok(views.html.index("Experimento 1 -Latencia y Escalabilidad "))
   }
 
-  def consultarEpisodios(idPaciente: Option[ Long ]) = Action.async { implicit request =>
-    migranaServices.getEpisodios(idPaciente) map { episodio =>
+  def consultarEpisodios(id: Option[ Long ]) = Action.async { implicit request =>
+    migranaServices.getEpisodios(id) map { episodio =>
       Ok( Json.toJson( episodio ) )
     }
   }
@@ -43,8 +43,7 @@ class Application extends Controller {
       json.validate[Episodio].map{
         case (episodio) => {
           Repository.addEpisodio(episodio).map(resultado => {
-            println(resultado)
-            migranaServices.generarAlertaPorMuchosDolores(episodio.IdPaciente)
+            //migranaServices.generarAlertaPorMuchosDolores(episodio.IdPaciente)
             Ok("Episodio agregado satisfactoriamente")
           })
         }

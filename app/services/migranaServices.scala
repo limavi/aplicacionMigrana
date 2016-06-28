@@ -14,8 +14,8 @@ object migranaServices {
     Repository.addListEpisodios(epiCompleto)
   }
 
-  def getEpisodios(idPaciente: Option[ Long ]): Future[Seq[Episodio]] = {
-    Repository.getEpisodios(idPaciente)
+  def getEpisodios(id: Option[ Long ]): Future[Seq[Episodio]] = {
+    Repository.getEpisodios(id)
   }
 
 
@@ -30,8 +30,8 @@ object migranaServices {
   def generarAlertaPorMuchosDolores(idPaciente: Long ): Future[Int] = {
     import scala.concurrent.ExecutionContext.Implicits.global
     Repository.getTotalEpisodosPorPaciente(idPaciente).map(total=> {
-      if(total>12000){
-        println("Alerta!!! usted ya ha tenido "+ total + " dolores de cabeza, por favor saque una cita " )}
+      if(total>12983){
+        println("Alerta!!! usted ya ha tenido mas de 12983 episodios de migrana, por favor saque una cita " )}
       total
     })
   }

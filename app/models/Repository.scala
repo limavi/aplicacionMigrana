@@ -19,20 +19,20 @@ object Repository {
 
 
   def addEpisodio(epi: Episodio): Future[String] = {
-    dbConfig.db.run(episodioTableQuery += epi).map(res => "episodio agregado correctamente").recover {
+    dbConfig.db.run(episodioTableQuery += epi).map(res => "episodio agregado correctamente" ).recover {
       case ex: Exception => ex.getCause.getMessage
     }
   }
 
   def addListEpisodios(epi: List[Episodio]): Future[String] = {
-    dbConfig.db.run(episodioTableQuery.++=(epi)).map(res => "episodios sincronizados  " + res.toString).recover {
+    dbConfig.db.run(episodioTableQuery.++=(epi)).map(res => "episodios sincronizados  ").recover {
       case ex: Exception => ex.getCause.getMessage
     }
   }
 
-  def getEpisodios(idPaciente: Option[ Long] ): Future[Seq[Episodio]] = {
-    val query: Query[EpisodioTable, Episodio, Seq] = idPaciente match {
-      case Some(idPaciente) =>episodioTableQuery.filter(_.IdPaciente === idPaciente)
+  def getEpisodios(id: Option[ Long] ): Future[Seq[Episodio]] = {
+    val query: Query[EpisodioTable, Episodio, Seq] = id match {
+      case Some(idPaciente) =>episodioTableQuery.filter(_.Id === id)
       case None=>episodioTableQuery
     }
     dbConfig.db.run(query.result)
