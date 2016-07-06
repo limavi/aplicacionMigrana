@@ -17,7 +17,7 @@ class Application extends Controller {
   implicit val pacienteFormat = Json.format[Paciente]
 
   def index= Action {
-    Ok(views.html.index("Experimento 1 -Latencia y Escalabilidad "))
+    Ok(views.html.index())
   }
 
   def consultarEpisodios(id: Option[ Long ]) = Action.async { implicit request =>

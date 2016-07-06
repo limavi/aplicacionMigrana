@@ -1,7 +1,20 @@
-@(message: String)
+<html>
+<head>
+    <title>migrañApp</title>
+</head>
+<body>
+<label class="sr-only" for="inputEmail">Usuario</label>
 
-@main("") {
 
-    @play20.welcome(message)
+<input type="text" class="form-control" id="inputEmail" placeholder="Usuario" required="" autofocus ng-model="user" capitalize>
+<label class="sr-only" for="inputPassword">Contraseña</label>
 
-}
+<input type="password" class="form-control" id="inputPassword" placeholder="Contraseña" required="" ng-model="password">
+<!--<div class="checkbox">
+  <label>
+    <input type="checkbox" value="remember-me"> Remember
+  </label>
+</div>-->
+<button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="loginAction()">Ingrese</button>
+</body>
+</html>
